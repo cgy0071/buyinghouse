@@ -1,0 +1,136 @@
+/* Phone layout for 这一年，安个家. Desktop rules stay in scenes.css. */
+@media (max-width: 780px) {
+  body { height: auto; overflow: auto; }
+  h1 { font-size: 28px; letter-spacing: 1px; }
+
+  .start {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100dvh;
+    overflow: auto;
+    gap: 16px;
+    padding: calc(16px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom));
+    align-items: stretch;
+  }
+  .start-art, .start-art svg, .start-copy { max-height: 30vh; }
+  .start-copy { grid-column: auto; grid-row: auto; }
+  .start-form { grid-column: auto; grid-row: auto; max-width: none; width: 100%; }
+  .start-form .primary, .start-form button { min-height: 48px; width: 100%; }
+
+  .shell {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100dvh;
+    grid-template-rows: none;
+    gap: 8px;
+    padding: calc(8px + env(safe-area-inset-top)) 10px calc(124px + env(safe-area-inset-bottom));
+  }
+  .topbar { flex-wrap: wrap; align-items: flex-start; gap: 8px; padding: 0; overflow: visible; }
+  .brand-chip { padding: 6px; max-width: 100%; }
+  .brand-chip .seal { display: none; }
+  .brand-chip .brand { font-size: 16px; }
+  .metrics {
+    width: 100%;
+    margin-left: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    padding: 8px;
+  }
+  .metric strong { font-size: 15px; white-space: normal; }
+  .metric small { font-size: 11px; }
+  .top-actions { width: 100%; justify-content: stretch; }
+  .top-actions button { flex: 1; min-height: 40px; }
+  .year-progress { min-width: 0; max-width: none; flex-basis: 100%; order: 3; }
+
+  .workspace { display: block; min-width: 0; }
+  .left, .market-panel, .right {
+    display: none;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    position: static;
+    min-height: 0;
+  }
+  body[data-phone="home"] .left,
+  body:not([data-phone]) .market-panel,
+  body[data-phone="market"] .market-panel,
+  body[data-phone="news"] .right { display: flex; }
+
+  .market-list { display: grid; grid-template-columns: 1fr; max-height: none; }
+  .market-panel .tools { grid-template-columns: 1fr 1fr; }
+  .market-panel .tools small { grid-column: 1 / -1; }
+  .tabs button { min-height: 36px; }
+  .warehouse-list { max-height: none; }
+  .bulletin-body { max-height: none; overflow: visible; }
+  .bulletin { overflow: visible; }
+  .product { padding: 12px; }
+  .product strong { font-size: 16px; }
+
+  .footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(52px + env(safe-area-inset-bottom));
+    z-index: 6;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin: 0;
+    padding: 8px 10px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 24px rgba(32, 57, 50, 0.08);
+  }
+  .footer small { display: none; }
+  .footer .primary { width: 100%; min-height: 48px; grid-column: 1 / -1; grid-row: 1; font-size: 16px; }
+  .footer .status { font-size: 11px; }
+  .footer-save { grid-column: 2; grid-row: 2; }
+  .footer > div:first-child { grid-column: 1; grid-row: 2; }
+
+  .phone-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 7;
+    background: #fffaf0;
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .phone-nav button {
+    min-height: 52px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 15px;
+  }
+  .phone-nav button.on { color: var(--accent); font-weight: 800; background: #e7f3ef; }
+
+  dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100dvh;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+    position: fixed;
+    bottom: 0;
+    top: auto;
+  }
+  .dialog-body { max-height: calc(100dvh - 74px); padding: 16px; }
+  .trade-layout, .storybook, .house-grid, .flyers, .stats-grid, .major-products { grid-template-columns: 1fr; }
+  input, select, textarea, .qty { font-size: 16px; }
+  .choices { flex-wrap: wrap; }
+  .choices button, .sale-buttons button { min-height: 44px; }
+  #toasts { bottom: calc(132px + env(safe-area-inset-bottom)); max-width: calc(100vw - 24px); }
+  .audio-enable { right: 10px; bottom: calc(132px + env(safe-area-inset-bottom)); }
+}
+
+@media (min-width: 781px) {
+  .phone-nav { display: none; }
+}
