@@ -24,10 +24,10 @@
   H.roleHalf = {daily: 0.08, industry: 0.14, spec: 0.20};
   H.persistCap = {daily: 3000, industry: 6000, spec: 8000};
   H.difficulties = {
-    fantasy: {name: '做梦', tagline: '街坊今天不说谎', blurb: '闲话的方向尽管听，指涨就是涨。市面更热闹，涨上去的价钱也更爱赖一会儿。房价一周周往上拱，楼市消息再推一把。', initialCash: 2100000, pocket: 1600000, houseFactor: 1, warehouseFactor: 1, volatility: 1.5, risk: 0.7, hintFlip: 0, revertRate: 0.09, startWarehouse: 'large'},
-    easy: {name: '轻松', tagline: '风是顺的', blurb: '街坊不跟你开玩笑，说的方向可以当真。房价松一档，仍会一周周悄悄长高。手头紧时，信用社只肯借一小笔。', initialCash: 400000, houseFactor: 0.8, warehouseFactor: 0.8, volatility: 0.85, risk: 0.8, hintFlip: 0},
-    standard: {name: '标准', tagline: '街坊也会说漏嘴', blurb: '闲话多半能跟，冷不丁会把方向说反。房价按着星期不紧不慢地往上挪。贷款适合垫一周周转，别拖成长期饭票。', initialCash: 300000, houseFactor: 1, warehouseFactor: 1, volatility: 1, risk: 1},
-    challenge: {name: '挑战', tagline: '这句话先掂一掂', blurb: '街坊可能把涨跌说反。房价更冲，一周周都在长个儿。贷款把仓位一下子放大：看对了，赚头跟着鼓起来；看走眼，跌幅和利息一起来敲门。', initialCash: 250000, houseFactor: 1.25, warehouseFactor: 1.2, volatility: 1.15, risk: 1.25, loan: {weeklyNumer: 30, weeklyDenom: 1000, maxPrincipal: 1200000, repayAmount: 200000, tiers: {'2000': 200000, '5000': 500000, '8000': 800000, '12000': 1200000}}}
+    fantasy: {name: '做梦', tagline: '马斯克是如何练成的', blurb: '闲话的方向尽管听，指涨就是涨。市面更热闹，涨上去的价钱也更爱赖一会儿。房价一周周往上拱，楼市消息再推一把。', initialCash: 2100000, pocket: 1600000, houseFactor: 1, warehouseFactor: 1, volatility: 1.5, risk: 0.7, hintFlip: 0, revertRate: 0.09, startWarehouse: 'large'},
+    easy: {name: '轻松', tagline: '花园里的钥匙备好了', blurb: '街坊不跟你开玩笑，说的方向可以当真。房价松一档，仍会一周周悄悄长高。手头紧时，信用社只肯借一小笔。', initialCash: 400000, houseFactor: 0.8, warehouseFactor: 0.8, volatility: 0.85, risk: 0.8, hintFlip: 0},
+    standard: {name: '标准', tagline: '先把城里两居安下来', blurb: '闲话多半能跟，冷不丁会把方向说反。房价按着星期不紧不慢地往上挪。贷款适合垫一周周转，别拖成长期饭票。', initialCash: 300000, houseFactor: 1, warehouseFactor: 1, volatility: 1, risk: 1},
+    challenge: {name: '挑战', tagline: '灯到最后还是房东的', blurb: '街坊可能把涨跌说反。房价更冲，一周周都在长个儿。贷款把仓位一下子放大：看对了，赚头跟着鼓起来；看走眼，跌幅和利息一起来敲门。', initialCash: 250000, houseFactor: 1.25, warehouseFactor: 1.2, volatility: 1.15, risk: 1.25, loan: {weeklyNumer: 30, weeklyDenom: 1000, maxPrincipal: 1200000, repayAmount: 200000, tiers: {'2000': 200000, '5000': 500000, '8000': 800000, '12000': 1200000}}}
   };
   // base/min/max/size remain frozen aliases. role is the rotation role; category stays the shelf tab.
   const rows = [
