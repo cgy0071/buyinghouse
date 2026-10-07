@@ -4,8 +4,8 @@
     return {qty: 0, cost: 0, price: p.base, previous: p.base, trend: 0, history: [p.base], low: p.base, high: p.base};
   }
   function priceBook(difficulty) {
-    const published = H.priceBooks['0.2'][difficulty];
-    return {id: '0.2', houses: H.clone(published.houses), warehouses: H.clone(published.warehouses)};
+    const published = H.priceBooks['0.4'][difficulty];
+    return {id: '0.4', houses: H.clone(published.houses), warehouses: H.clone(published.warehouses)};
   }
   H.create = function (seed = 'CITY-382741', difficulty = 'standard') {
     if (typeof seed !== 'string' || !seed.length || seed.length > 128) throw Error('种子不能为空或过长');
@@ -14,10 +14,11 @@
       calendarStartWeek: H.calendarStart(seed), week: 1, cash: H.difficulties[difficulty].initialCash, capacity: H.rules.capacity, warehouse: 'room',
       revision: 0, status: 'playing', house: null, result: null, rng: {}, inventory: {}, market: {}, activeEvents: [],
       macro: 1, season: H.seasonAt(H.calendarStart(seed)), personal: 0, personalEvent: null, news: [], rumors: [], history: [], stats: {},
-      listing: [], absence: {}, onStreak: {}, legacy: {}, migration: null, upgrade: null, swanLog: [], priceBook: priceBook(difficulty)};
+      listing: [], absence: {}, onStreak: {}, legacy: {}, migration: null, upgrade: null, swanLog: [], housingLog: [], purchases: [], houseBasis: 0, priceBook: priceBook(difficulty),
+      loan: {principal: 0, interestDue: 0}};
     for (const key of H.statFields) s.stats[key] = 0;
     s.stats.byProduct = {};
-    for (const stream of ['market', 'events', 'visual', 'listing']) s.rng[stream] = H.seed(seed + ':' + stream);
+    for (const stream of ['market', 'events', 'visual', 'listing', 'housing', 'lottery']) s.rng[stream] = H.seed(seed + ':' + stream);
     for (const p of H.products) {
       s.inventory[p.id] = {qty: 0, cost: 0};
       s.market[p.id] = {price: p.base, previous: p.base, trend: 0, history: [p.base], low: p.base, high: p.base};
@@ -34,6 +35,16 @@
       const on = s.listing.includes(p.id);
       s.absence[p.id] = on ? 0 : 1;
       s.onStreak[p.id] = on ? 1 : 0;
+    }
+    const startId = H.difficulties[difficulty].startWarehouse;
+    if (startId && startId !== 'room') {
+      const w = H.warehouses.find(x => x.id === startId);
+      const price = H.warehousePrice(s, w);
+      s.warehouse = w.id;
+      s.capacity = w.capacity;
+      s.cash -= price;
+      s.stats.warehouseSpent = price;
+      s.stats.upgrades = H.warehouses.findIndex(x => x.id === startId);
     }
     s.rumors = H.makeRumors(s);
     H.record(s); H.validate(s);
@@ -87,9 +98,12 @@
     this.visible = () => ({seed: state.seed, difficulty: state.difficulty, week: state.week, revision: state.revision,
       calendarStartWeek: state.calendarStartWeek, calendarWeek: H.calendarWeek(state), season: state.season,
       cash: state.cash, capacity: state.capacity, warehouse: state.warehouse, house: state.house, status: state.status,
-      priceBook: H.clone(state.priceBook), listing: state.listing.slice(), inventory: H.clone(state.inventory),
+      priceBook: H.clone(state.priceBook), purchases: H.clone(state.purchases), housingLog: H.clone(state.housingLog),
+      listing: state.listing.slice(), inventory: H.clone(state.inventory),
       legacy: Object.fromEntries(H.legacyProducts.map(p => [p.id, {qty: state.legacy[p.id].qty, cost: state.legacy[p.id].cost, price: state.legacy[p.id].price, previous: state.legacy[p.id].previous}])),
       news: H.clone(state.news), rumors: H.clone(state.rumors), assets: H.assets(state), liquid: H.liquidValue(state),
+      loan: {principal: state.loan.principal, interestDue: state.loan.interestDue, interestNext: H.loanInterest(state), open: H.loanOpen(state)},
+      lottery: {price: H.lotteryRules.price, count: state.stats.lotteryCount},
       market: Object.fromEntries(H.products.map(p => { const m = state.market[p.id]; return [p.id,
         {price: m.price, previous: m.previous, history: m.history.slice(), low: m.low, high: m.high}]; }))});
     this.dispatch = op => {
@@ -100,18 +114,23 @@
         if (op.revision !== state.revision) throw Error('操作已过期');
         if (state.status !== 'playing') throw Error('本年已结束');
         const next = H.clone(state);
-        let pending = null, eventDiag = null;
+        let pending = null, eventDiag = null, card = null;
         switch (op.type) {
           case 'buy': case 'sell': H.trade(next, op.type, op.id, op.qty); break;
           case 'house': H.buyHouse(next, op.id); break;
           case 'warehouse': H.upgradeWarehouse(next, op.id); break;
+          case 'loan': H.borrowLoan(next, op.id); break;
+          case 'repay': H.repayLoan(next, op.id); break;
+          case 'lottery': card = H.buyLottery(next); break;
           case 'next':
             if (next.week === 52) throw Error('第52周请结束本年');
             ({pending, eventDiag} = H.advanceMarket(next));
+            H.accrueLoan(next);
             H.personal(next); H.news(next);
             next.rumors = H.makeRumors(next); break;
           case 'end':
             if (next.week !== 52) throw Error('尚未到年底');
+            if (next.loan.principal > 0) H.accrueLoan(next);
             next.status = 'ended'; break;
           default: throw Error('未知操作');
         }
@@ -139,7 +158,9 @@
         if (this.onCommit) {
           try { this.onCommit(this.snapshot()); } catch (e) { saveError = e.message; }
         }
-        return {ok: true, saveError, result: state.result ? H.clone(state.result) : null};
+        const out = {ok: true, saveError, result: state.result ? H.clone(state.result) : null};
+        if (op.type === 'lottery') out.card = H.clone(card);
+        return out;
       } catch (e) { return {ok: false, error: e.message}; }
     };
   };

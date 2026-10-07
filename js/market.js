@@ -199,7 +199,7 @@
       m.previous = m.price;
       const raw = starts
         ? m.price + Math.round(m.price * start / 10000) + noise
-        : m.price + Math.round(H.rules.revertRate * (center - m.price)) + noise;
+        : m.price + Math.round((H.difficulty(s).revertRate != null ? H.difficulty(s).revertRate : H.rules.revertRate) * (center - m.price)) + noise;
       const clamped = Math.max(p.min, Math.min(p.max, raw));
       if (clamped !== raw) {
         clips++;
@@ -225,9 +225,26 @@
       eventStarted: s.activeEvents.some(a => a.started === s.week)};
   };
   // Shared by real next and clone preview, including personal-event RNG draws.
+  // Ineligible weeks, counts, or gaps do not touch the housing stream.
+  H.drawHousing = s => {
+    const cfg = H.housingRules, log = s.housingLog, last = log[log.length - 1];
+    const eligible = s.week >= cfg.firstWeek && s.week <= cfg.lastWeek && log.length < cfg.limit && (!last || s.week - last.week >= cfg.gap);
+    if (!eligible) return;
+    if (!(H.random(s, 'housing') < cfg.probability)) return;
+    const used = new Set(log.map(entry => entry.id));
+    const pool = H.housingEvents.filter(e => !used.has(e.id));
+    if (!pool.length) return;
+    const chosen = pool[Math.floor(H.random(s, 'housing') * pool.length)];
+    s.housingLog.push({id: chosen.id, week: s.week});
+  };
+  H.applyHousePrices = s => {
+    for (const h of H.houses) s.priceBook.houses[h.id] = H.houseQuote(s, h.id);
+  };
   H.advanceMarket = s => {
     if (s.week >= 52 || s.status !== 'playing') throw Error('没有下一经营周');
     s.week++;
+    H.drawHousing(s);
+    H.applyHousePrices(s);
     H.environment(s); H.rotate(s);
     const eventDiag = H.drawEvents(s); H.trends(s);
     const pending = H.prices(s); pending.week = s.week;
@@ -251,7 +268,8 @@
     const sources = Object.keys(H.hintSources);
     return candidates.slice(0,cfg.limit).map(productId => {
       let up = H.changeBps(preview.market[productId]) > 0;
-      if (random() < cfg.flipProbability) up = !up;
+      const flip = H.difficulty(s).hintFlip != null ? H.difficulty(s).hintFlip : cfg.flipProbability;
+      if (random() < flip) up = !up;
       return {productId, direction:up ? 'up' : 'down', sourceId:sources[Math.floor(random()*sources.length)]};
     });
   };
@@ -320,6 +338,10 @@
     if (s.personalEvent) {
       const e = H.events.find(ev => ev.id === s.personalEvent);
       s.news.push(item(s, e.id, e.title, 'reliable', 'personal', null, true));
+    }
+    for (const hit of s.housingLog.filter(entry => entry.week === s.week)) {
+      const ev = H.housingEvents.find(e => e.id === hit.id);
+      s.news.push({id: ev.id, title: ev.title, reliability: 'reliable', week: s.week, kind: 'housing', productId: null, changeBps: H.houseChangeBps(s, 'studio'), fresh: true});
     }
   };
 })(window.HomeYear);

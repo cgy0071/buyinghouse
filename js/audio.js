@@ -114,6 +114,80 @@ Engine.prototype.sfx=function(kind,t,out){
     [[0,[0,4,7,12]],[.55,[5,9,12,17]],[1.1,[0,7,14,16,19]]].forEach(([dt,chord],i)=>chord.forEach((iv,j)=>I.play('glock',ac,dest,t+dt+j*.06,base+12+iv,.8,.75)));
     I.play('bell',ac,dest,t,base,2,.8);I.play('bell',ac,dest,t+1.1,base+12,2,.7);I.play('sub',ac,dest,t+1.1,base-24,1.6,.9);return;
   }
+  // New cues stay in key (base) and on sfxBus. Velocities sit at or under the older one-shot layer.
+  if(kind==='credit-open'){
+    I.play('wood',ac,dest,t,base,.08,.4,{});
+    [[.2,4,.3],[.5,7,.32],[.82,9,.34]].forEach(([dt,iv,dur])=>I.play('epiano',ac,dest,t+dt,base+iv,dur,.5,{}));
+    return;
+  }
+  if(kind==='loan'){
+    // Stamp thud: wood knock + short paper rustle (filtered noise) + ink-pad chord.
+    I.play('wood',ac,dest,t,base,.06,.45,{});
+    // Paper rustle: short burst of filtered noise at stamp moment
+    const buf=ac.createBuffer(1,ac.sampleRate*.08,ac.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*.18*(1-i/d.length);
+    const src=ac.createBufferSource();src.buffer=buf;const flt=ac.createBiquadFilter();flt.type='bandpass';flt.frequency.value=800;flt.Q.value=1.2;const g=ac.createGain();g.gain.value=.5;src.connect(flt);flt.connect(g);g.connect(dest);src.start(t+.01);
+    I.play('epiano',ac,dest,t+.03,base,.28,.48,{});I.play('epiano',ac,dest,t+.03,base+7,.28,.48,{});
+    return;
+  }
+  if(kind==='repay'){
+    [0,4,7].forEach(iv=>I.play('epiano',ac,dest,t,base+iv,.24,.45,{}));
+    return;
+  }
+  if(kind==='refuse'){
+    I.play('rim',ac,dest,t,base,.06,.5,{});I.play('bass',ac,dest,t,base-12,.18,.65,{});
+    return;
+  }
+  if(kind==='lottery-open'){
+    [[0,0],[.15,4],[.3,7],[.48,12]].forEach(([dt,iv])=>I.play('marimba',ac,dest,t+dt,base+iv,.22,.56,{}));
+    return;
+  }
+  if(kind==='scratch'){
+    // Foil scrape: short filtered noise burst — papery, not metallic.
+    const buf=ac.createBuffer(1,ac.sampleRate*.07,ac.sampleRate);const d=buf.getChannelData(0);
+    // two-layer: mid-frequency scratch body + high shimmer
+    for(let i=0;i<d.length;i++){const env=Math.pow(1-i/d.length,1.4);d[i]=(Math.random()*2-1)*.28*env;}
+    const src=ac.createBufferSource();src.buffer=buf;
+    const flt=ac.createBiquadFilter();flt.type='peaking';flt.frequency.value=2800;flt.gain.value=9;flt.Q.value=1.4;
+    const flt2=ac.createBiquadFilter();flt2.type='highshelf';flt2.frequency.value=5000;flt2.gain.value=5;
+    const g=ac.createGain();g.gain.value=.52;
+    src.connect(flt);flt.connect(flt2);flt2.connect(g);g.connect(dest);src.start(t);
+    return;
+  }
+  if(kind==='prize-none'){
+    // Empty envelope: dull thud + descending two-note "nope"
+    I.play('wood',ac,dest,t,base-12,.09,.42,{});
+    I.play('marimba',ac,dest,t+.06,base+4,.18,.35,{});
+    I.play('marimba',ac,dest,t+.22,base+0,.20,.32,{});
+    return;
+  }
+  if(kind==='prize-small'){
+    // Small win: bright single bell, slight music nudge
+    I.play('glock',ac,dest,t,base+12,.38,.58,{});
+    I.play('epiano',ac,dest,t+.05,base+7,.24,.44,{});
+    return;
+  }
+  if(kind==='prize-mid'){
+    // Medium win: two-note bell chord, short duck
+    const bar=this.current?this.current.barDur:2.6;
+    this.duck.gain.cancelScheduledValues(t);
+    this.duck.gain.setTargetAtTime(.78,t,.03);
+    this.duck.gain.setTargetAtTime(1,t+bar*.6,.25);
+    I.play('glock',ac,dest,t,base+12,.44,.52,{});
+    I.play('epiano',ac,dest,t,base+7,.36,.48,{});
+    I.play('glock',ac,dest,t+.28,base+16,.38,.46,{});
+    return;
+  }
+  if(kind==='prize-key'){
+    // Shallower than house (0.7, not 0.5) and only one bar, not two.
+    const bar=this.current?this.current.barDur:2.6;this.duck.gain.cancelScheduledValues(t);this.duck.gain.setTargetAtTime(.7,t,.04);this.duck.gain.setTargetAtTime(1,t+bar,.2);
+    [[0,0],[.1,4],[.2,7],[.32,12]].forEach(([dt,iv])=>I.play('bell',ac,dest,t+dt,base+12+iv,.45,.36,{}));
+    return;
+  }
+  // step: soft wood tok for next-week footstep feel (called alongside 'next').
+  if(kind==='step'){
+    I.play('wood',ac,dest,t,base-5,.05,.28,{});
+    return;
+  }
   const list=SFX[kind]||SFX.click,name=kind==='error'?'bass':kind==='news'||kind==='next'?'glock':'marimba';
   for(const [dt,iv,dur] of list){I.play(name,ac,dest,t+dt,base+iv-(kind==='error'?24:0),dur,kind==='error'?1.3:.8,{});if(kind!=='error')I.play('epiano',ac,dest,t+dt,base+iv,dur,1.1,{});}
 };
