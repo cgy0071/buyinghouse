@@ -139,6 +139,7 @@
             next.status = 'ended'; break;
           default: throw Error('未知操作');
         }
+        if (H.difficulty(next).luck && next.status === 'playing' && next.week < 52 && op.type !== 'next') next.rumors = H.makeRumors(next);
         H.record(next); next.revision++;
         if (next.status === 'ended') next.result = H.summary(next);
         H.validate(next);

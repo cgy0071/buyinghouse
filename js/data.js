@@ -24,8 +24,8 @@
   H.roleHalf = {daily: 0.08, industry: 0.14, spec: 0.20};
   H.persistCap = {daily: 3000, industry: 6000, spec: 8000};
   H.difficulties = {
-    fantasy: {name: '顺风', tagline: '马斯克是如何练成的', blurb: '街坊指哪是哪。行情更欢，涨上去的价更赖着不走。水大，鱼也大。', initialCash: 2100000, pocket: 1600000, houseFactor: 1, warehouseFactor: 1, volatility: 1.5, risk: 0.7, hintFlip: 0, revertRate: 0.09, startWarehouse: 'large'},
-    easy: {name: '轻松', tagline: '花园里的钥匙备好了', blurb: '街坊不说谎。房价更松，远处那间舱也没那么远。行情更欢一点，涨上去的价会多留一阵。小河平稳，也好行船。', initialCash: 1200000, pocket: 800000, houseFactor: 0.8, warehouseFactor: 0.8, volatility: 1.25, risk: 0.8, hintFlip: 0, revertRate: 0.1, startWarehouse: 'large'},
+    fantasy: {name: '顺风', tagline: '马斯克是如何练成的', blurb: '你就是气运之子。买到手的多半会涨。黑天鹅和市面涨跌，也多半顺着你。', initialCash: 2100000, pocket: 1600000, houseFactor: 1, warehouseFactor: 1, volatility: 1.5, risk: 0.7, hintFlip: 0, revertRate: 0.09, startWarehouse: 'large', luck: true},
+    easy: {name: '轻松', tagline: '花园里的钥匙备好了', blurb: '街坊不说谎。房价更松，仍一周周悄悄长个儿。小河平稳，也好行船。', initialCash: 400000, houseFactor: 0.8, warehouseFactor: 0.8, volatility: 0.85, risk: 0.8, hintFlip: 0},
     standard: {name: '标准', tagline: '先把城里两居安下来', blurb: '街坊多半靠谱，偶尔说反。房价按着星期慢慢涨。贷款垫一周，见好就收。', initialCash: 300000, houseFactor: 1, warehouseFactor: 1, volatility: 1, risk: 1},
     challenge: {name: '挑战', tagline: '灯到最后还是房东的', blurb: '街坊可能说反话，房价也更冲。自己名下没有余钱，还倒欠着，能花的都是贷款。风浪越大鱼越贵。', initialCash: -300000, houseFactor: 1.25, warehouseFactor: 1.2, volatility: 1.15, risk: 1.25, startLoan: '6000'}
   };
@@ -87,13 +87,13 @@
     },
     // 0.3 copies 0.2 for the original five houses and all warehouses. New houses use exact 0.8 / 1.25.
     '0.3': {
-      easy: book({studio:520000, flat:800000, two:1120000, city:1520000, dream:2000000, townhouse:2880000, courtyard:4960000, island:8640000, mars:10000000}, {room:0, small:56000, normal:176000, large:400000}),
+      easy: book({studio:520000, flat:800000, two:1120000, city:1520000, dream:2000000, townhouse:2880000, courtyard:4960000, island:8640000, mars:16000000}, {room:0, small:56000, normal:176000, large:400000}),
       standard: book({studio:650000, flat:1000000, two:1400000, city:1900000, dream:2500000, townhouse:3600000, courtyard:6200000, island:10800000, mars:20000000}, {room:0, small:70000, normal:220000, large:500000}),
       challenge: book({studio:812500, flat:1250000, two:1750000, city:2375000, dream:3125000, townhouse:4500000, courtyard:7750000, island:13500000, mars:25000000}, {room:0, small:84000, normal:264000, large:600000})
     },
     // 0.4 lowers standard 1–5. Easy 1–5 stay at 0.3. Challenge 1–5 = standard × 1.25. 6–9 and warehouses copy 0.3.
     '0.4': {
-      easy: book({studio:520000, flat:800000, two:1120000, city:1520000, dream:2000000, townhouse:2880000, courtyard:4960000, island:8640000, mars:10000000}, {room:0, small:56000, normal:176000, large:400000}),
+      easy: book({studio:520000, flat:800000, two:1120000, city:1520000, dream:2000000, townhouse:2880000, courtyard:4960000, island:8640000, mars:16000000}, {room:0, small:56000, normal:176000, large:400000}),
       standard: book({studio:420000, flat:580000, two:700000, city:1200000, dream:1900000, townhouse:3600000, courtyard:6200000, island:10800000, mars:20000000}, {room:0, small:70000, normal:220000, large:500000}),
       challenge: book({studio:525000, flat:725000, two:875000, city:1500000, dream:2375000, townhouse:4500000, courtyard:7750000, island:13500000, mars:25000000}, {room:0, small:84000, normal:264000, large:600000}),
       fantasy: book({studio:420000, flat:580000, two:700000, city:1200000, dream:1900000, townhouse:3600000, courtyard:6200000, island:10800000, mars:20000000}, {room:0, small:70000, normal:220000, large:500000})
