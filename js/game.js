@@ -46,6 +46,11 @@
       s.stats.warehouseSpent = price;
       s.stats.upgrades = H.warehouses.findIndex(x => x.id === startId);
     }
+    const startLoan = H.difficulties[difficulty].startLoan;
+    if (startLoan) {
+      H.borrowLoan(s, startLoan);
+      H.accrueLoan(s);
+    }
     s.rumors = H.makeRumors(s);
     H.record(s); H.validate(s);
     return s;

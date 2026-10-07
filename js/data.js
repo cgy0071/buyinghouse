@@ -7,8 +7,8 @@
     headlineMoveBps: 800, revertRate: 0.15
   };
   H.loanRules = Object.freeze({
-    weeklyNumer: 15, weeklyDenom: 1000, maxPrincipal: 1200000, repayAmount: 50000,
-    tiers: Object.freeze({'500': 50000, '1000': 100000, '2000': 200000, '3000': 300000})
+    weeklyNumer: 20, weeklyDenom: 1000, maxPrincipal: 1200000, repayAmount: 100000,
+    tiers: Object.freeze({'1000': 100000, '3000': 300000, '6000': 600000, '12000': 1200000})
   });
   H.lotteryRules = Object.freeze({
     price: 3000, cells: 9, matches: 3, maxRepeat: 2,
@@ -24,10 +24,10 @@
   H.roleHalf = {daily: 0.08, industry: 0.14, spec: 0.20};
   H.persistCap = {daily: 3000, industry: 6000, spec: 8000};
   H.difficulties = {
-    fantasy: {name: '做梦', tagline: '马斯克是如何练成的', blurb: '街坊指哪是哪。行情更欢，涨上去的价更赖着不走。水大，鱼也大。', initialCash: 2100000, pocket: 1600000, houseFactor: 1, warehouseFactor: 1, volatility: 1.5, risk: 0.7, hintFlip: 0, revertRate: 0.09, startWarehouse: 'large'},
+    fantasy: {name: '顺风', tagline: '马斯克是如何练成的', blurb: '街坊指哪是哪。行情更欢，涨上去的价更赖着不走。水大，鱼也大。', initialCash: 2100000, pocket: 1600000, houseFactor: 1, warehouseFactor: 1, volatility: 1.5, risk: 0.7, hintFlip: 0, revertRate: 0.09, startWarehouse: 'large'},
     easy: {name: '轻松', tagline: '花园里的钥匙备好了', blurb: '街坊不说谎。房价更松，仍一周周悄悄长个儿。小河平稳，也好行船。', initialCash: 400000, houseFactor: 0.8, warehouseFactor: 0.8, volatility: 0.85, risk: 0.8, hintFlip: 0},
     standard: {name: '标准', tagline: '先把城里两居安下来', blurb: '街坊多半靠谱，偶尔说反。房价按着星期慢慢涨。贷款垫一周，见好就收。', initialCash: 300000, houseFactor: 1, warehouseFactor: 1, volatility: 1, risk: 1},
-    challenge: {name: '挑战', tagline: '灯到最后还是房东的', blurb: '街坊可能说反话，房价也更冲。更高的贷款额度，更高的利息，风浪越大鱼越贵。', initialCash: 250000, houseFactor: 1.25, warehouseFactor: 1.2, volatility: 1.15, risk: 1.25, loan: {weeklyNumer: 30, weeklyDenom: 1000, maxPrincipal: 1200000, repayAmount: 200000, tiers: {'2000': 200000, '5000': 500000, '8000': 800000, '12000': 1200000}}}
+    challenge: {name: '挑战', tagline: '灯到最后还是房东的', blurb: '街坊可能说反话，房价也更冲。开局就背着一笔贷款。风浪越大鱼越贵。', initialCash: 250000, houseFactor: 1.25, warehouseFactor: 1.2, volatility: 1.15, risk: 1.25, startLoan: '6000'}
   };
   // base/min/max/size remain frozen aliases. role is the rotation role; category stays the shelf tab.
   const rows = [
